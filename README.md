@@ -1,13 +1,14 @@
 # adaptive_nav_bar
 
-Adaptive glass-inspired bottom navigation that automatically switches between a Material 3 glass bar and a native Cupertino tab bar.  
+Adaptive glass-inspired bottom navigation that automatically switches between a custom iOS 26-style pill and the real native `CupertinoNative` tab bar on physical iOS devices.  
 Features include:
 
 - Scroll-aware expand/shrink behavior with haptic feedback controls
 - Per-item color overrides, badges, and custom label behavior
-- Glass blur/background tuning plus optional center/trailing action slots
-- Native split trailing actions on iOS 26+ (e.g. Cupertino search pill) with Flutter fallback elsewhere
-- Native `CupertinoNative` integration for iOS 26+ and legacy layouts
+- Tunable iOS 26 pill style (blur, radius, colors, padding) for Android & older iOS versions
+- Native `CupertinoNative` integration for iOS 26+ with split trailing actions
+- Material glass fallback plus optional detached bubbles, center buttons, and trailing widgets
+- Multiple detached nav items via `detachedIndexes`
 
 ## Installation
 
@@ -64,16 +65,29 @@ class _DemoAppState extends State<DemoApp> {
         cupertinoSymbol: 'gearshape.fill',
       ),
     ],
-    // Optional floating action
-    centerAction: FloatingActionButton(
-      onPressed: () {},
-      child: const Icon(Icons.add),
+    behavior: const NavBehaviorConfig(
+      autoHideOnScroll: true,
+      compactScale: 0.58,
     ),
-    // Detach the last item and show it as a floating search bubble
-    detachedIndex: 3,
-    detachedItemPadding: const EdgeInsets.only(right: 16, bottom: 18),
-    detachedItemSpacing: 14,
-    detachedItemSize: 58,
+    ios26Style: const iOS26NavStyle(
+      barHeight: 82,
+      activeColor: Colors.indigo,
+      inactiveColor: Colors.black87,
+      backgroundColor: Colors.white,
+      borderRadius: 32,
+      blurSigma: 30,
+    ),
+    iosStyle: const CupertinoNavStyle(
+      activeColor: Colors.indigo,
+      inactiveColor: Colors.black87,
+      ios26Height: 82,
+      legacyHeight: 76,
+      indicatorPadding: 6,
+    ),
+    detachedIndexes: const [3],
+    detachedItemPadding: const EdgeInsets.only(right: 20, bottom: 20),
+    detachedItemSpacing: 12,
+    detachedItemSize: 56,
   );
 
   @override
@@ -109,9 +123,53 @@ flutter run
 
 > Tip: To keep the auto-hide behavior, pass the same `ScrollController` you use in your scrollable body to `AdaptiveNavBar(autoHideController: ...)`.
 
-When `detachedIndex` points to a trailing item (only one can be detached), iOS 26+ devices render the native split trailing pill (perfect for Search). On Android or older iOS builds the package automatically falls back to the Flutter-defined detached bubble so behavior stays consistent. (If the index is not the last item, the widget will fall back to the Flutter bubble everywhere.) If you omit `detachedIndex`, you can still place any bespoke widget via the legacy `trailingAction`.
+## Platform behaviour
 
-Use `detachedItemPadding`, `detachedItemSpacing`, and `detachedItemSize` to fine-tune how the floating bubble sits relative to the glass bar on legacy platforms.
+- **iOS 26+** &nbsp;→&nbsp; Uses Apple’s native tab bar via [`cupertino_native`](https://pub.dev/packages/cupertino_native). Trailing items detach into the system split view if you mark them as detached and they sit at the end.
+- **Android, web, and older iOS** &nbsp;→&nbsp; Render the Flutter-driven `iOS26NavStyle`, which mimics the new pill layout (blur, border, labels, etc.) while keeping detached bubbles and actions consistent.
+
+## Detaching multiple nav items
+
+Use `detachedIndexes` to float one or more items outside the bar:
+
+```dart
+AdaptiveNavConfig(
+  items: _items,
+  detachedIndexes: const [2, 3], // Favorites + Settings as bubbles
+  detachedItemPadding: const EdgeInsets.only(right: 28, bottom: 22),
+  detachedItemSpacing: 16,
+  detachedItemSize: 58,
+  detachedItemBuilder: (context, item, isSelected) {
+    return _CustomBubble(item: item, isSelected: isSelected);
+  },
+);
+```
+
+`detachedIndex` is still accepted for backwards compatibility, but `detachedIndexes` is more flexible.
+
+## Customising the iOS 26 look
+
+`iOS26NavStyle` lets you tweak the faux iOS bar when you are on Android or older iOS builds:
+
+```dart
+const iOS26NavStyle(
+  barHeight: 84,
+  borderRadius: 34,
+  blurSigma: 40,
+  backgroundAlpha: 0.9,
+  selectedBackgroundAlpha: 0.2,
+  activeColor: Colors.indigo,
+  inactiveColor: Colors.black87,
+  labelTextStyle: TextStyle(fontWeight: FontWeight.w500),
+  selectedLabelTextStyle: TextStyle(fontWeight: FontWeight.w600),
+  iconSize: 24,
+  itemSpacing: 4,
+  verticalPadding: 10,
+  horizontalPadding: 12,
+);
+```
+
+You can mix these with `CupertinoNavStyle` overrides for the genuine native bar so both experiences stay in sync.
 
 ## License
 

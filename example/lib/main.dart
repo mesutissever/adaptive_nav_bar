@@ -45,25 +45,25 @@ class _DemoHomeState extends State<_DemoHome> {
       compactScale: 0.58,
       hapticIntensity: NavHapticIntensity.medium,
     ),
-    // iOS 26 Style - Tüm platformlarda kullanılır (iOS 26+ hariç, o native kullanır)
+    // Custom pill style rendered on Android + iOS <= 25
     ios26Style: const iOS26NavStyle(
-      barHeight: 82, // Tab bar yüksekliği
-      borderRadius: 32, // Kenar yuvarlaklığı
-      blurSigma: 30, // Blur efekti yoğunluğu
-      backgroundAlpha: 0.92, // Arka plan saydamlığı
-      borderAlpha: 0.15, // Çerçeve saydamlığı
-      selectedBackgroundAlpha: 0.15, // Seçili tab arka plan saydamlığı
-      selectedBorderRadius: 24, // Seçili tab yuvarlaklığı
-      activeColor: Colors.blue, // Seçili tab rengi
-      inactiveColor: Colors.black87, // Seçili olmayan tab rengi
-      backgroundColor: Colors.white, // Ana arka plan rengi
-      labelBehavior: NavLabelBehavior.always, // Label gösterimi
-      iconSize: 24, // İkon boyutu
-      itemSpacing: 4, // Icon-label arası boşluk
-      verticalPadding: 8, // Dikey padding
-      horizontalPadding: 12, // Yatay padding
+      barHeight: 82,
+      borderRadius: 32,
+      blurSigma: 30,
+      backgroundAlpha: 0.92,
+      borderAlpha: 0.15,
+      selectedBackgroundAlpha: 0.18,
+      selectedBorderRadius: 24,
+      activeColor: Colors.indigo,
+      inactiveColor: Colors.black87,
+      backgroundColor: Colors.white,
+      labelBehavior: NavLabelBehavior.always,
+      iconSize: 24,
+      itemSpacing: 4,
+      verticalPadding: 8,
+      horizontalPadding: 12,
     ),
-    // iOS 26+ için native CNTabBar kullanılırken bu ayarlar aktif olur
+    // Native CNTabBar overrides (iOS 26+ devices)
     iosStyle: const CupertinoNavStyle(
       activeColor: Colors.indigo,
       inactiveColor: Colors.black,
@@ -77,25 +77,12 @@ class _DemoHomeState extends State<_DemoHome> {
       selectedLabelTextStyle: TextStyle(fontWeight: FontWeight.w600),
     ),
 
-    // ⭐ PARAMETRİK DETACHED BUTTON SİSTEMİ ⭐
-    // İstediğiniz butonları ayrı gösterebilirsiniz
-    // Örnek 1: Sadece Settings butonunu ayrı yap
-    detachedIndexes: const [3], // Son buton (Settings) ayrı gösterilir
-    // Örnek 2: Birden fazla buton ayrı yapmak için
-    // detachedIndexes: const [2, 3],  // Favorites ve Settings ayrı
-
-    // Örnek 3: Hiçbir buton ayrı olmasın
-    // detachedIndexes: const [],
-
-    // Detached butonların görünümünü özelleştirin
+    // Float the Settings item; add more indexes for extra bubbles.
+    detachedIndexes: const [3],
     detachedItemPadding: const EdgeInsets.only(right: 28, bottom: 22),
     detachedItemSpacing: 14,
     detachedItemSize: 58,
-
-    // İsterseniz custom builder ile tamamen özel tasarım yapabilirsiniz
-    // detachedItemBuilder: (context, item, isSelected) {
-    //   return Container(...); // Kendi tasarımınız
-    // },
+    // detachedItemBuilder: _buildCustomBubble, // Uncomment to fully override.
   );
 
   List<NavItemConfig> get _navItems => const [
@@ -104,7 +91,7 @@ class _DemoHomeState extends State<_DemoHome> {
       materialIcon: Icons.home_outlined,
       materialSelectedIcon: Icons.home_rounded,
       cupertinoSymbol: 'house.fill',
-      badgeCount: 4, // Badge sayısı
+      badgeCount: 4,
     ),
     NavItemConfig(
       label: 'Profile',
@@ -112,7 +99,7 @@ class _DemoHomeState extends State<_DemoHome> {
       materialSelectedIcon: Icons.person,
       cupertinoSymbol: 'person.fill',
       badgeCount: 1,
-      badgeColor: Colors.pink, // Badge özel rengi
+      badgeColor: Colors.pink,
     ),
     NavItemConfig(
       label: 'Favorites',

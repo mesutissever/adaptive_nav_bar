@@ -570,7 +570,7 @@ class _AdaptiveNavBarState extends State<AdaptiveNavBar> {
       padding: EdgeInsets.only(
         left: horizontalMargin,
         right: horizontalMargin,
-        bottom: 8.adaptive_h, // Alt çentikten boşluk
+        // bottom: 50.adaptive_h, // Alt çentikten boşluk
       ),
       child: navBar,
     );
