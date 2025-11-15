@@ -45,24 +45,57 @@ class _DemoHomeState extends State<_DemoHome> {
       compactScale: 0.58,
       hapticIntensity: NavHapticIntensity.medium,
     ),
-    androidStyle: const GlassNavStyle(
-      labelBehavior: NavLabelBehavior.always,
-      expandedHeight: 86,
-      compactHeight: 68,
-      indicatorColor: Color(0x33FFFFFF),
-      activeLabelColor: Colors.white,
-      inactiveLabelColor: Colors.white70,
+    // iOS 26 Style - Tüm platformlarda kullanılır (iOS 26+ hariç, o native kullanır)
+    ios26Style: const iOS26NavStyle(
+      barHeight: 82, // Tab bar yüksekliği
+      borderRadius: 32, // Kenar yuvarlaklığı
+      blurSigma: 30, // Blur efekti yoğunluğu
+      backgroundAlpha: 0.92, // Arka plan saydamlığı
+      borderAlpha: 0.15, // Çerçeve saydamlığı
+      selectedBackgroundAlpha: 0.15, // Seçili tab arka plan saydamlığı
+      selectedBorderRadius: 24, // Seçili tab yuvarlaklığı
+      activeColor: Colors.blue, // Seçili tab rengi
+      inactiveColor: Colors.black87, // Seçili olmayan tab rengi
+      backgroundColor: Colors.white, // Ana arka plan rengi
+      labelBehavior: NavLabelBehavior.always, // Label gösterimi
+      iconSize: 24, // İkon boyutu
+      itemSpacing: 4, // Icon-label arası boşluk
+      verticalPadding: 8, // Dikey padding
+      horizontalPadding: 12, // Yatay padding
     ),
+    // iOS 26+ için native CNTabBar kullanılırken bu ayarlar aktif olur
     iosStyle: const CupertinoNavStyle(
       activeColor: Colors.indigo,
       inactiveColor: Colors.black,
-      labelBehavior: NavLabelBehavior.onlySelected,
+      ios26Height: 82,
+      legacyHeight: 78,
+      legacyExpandedPadding: 16,
+      legacyCompactPadding: 6,
+      indicatorPadding: 6,
+      labelBehavior: NavLabelBehavior.always,
+      labelTextStyle: TextStyle(fontWeight: FontWeight.w500),
+      selectedLabelTextStyle: TextStyle(fontWeight: FontWeight.w600),
     ),
-    centerAction: FloatingActionButton(
-      onPressed: _controller.toggle,
-      child: const Icon(Icons.add),
-    ),
-    centerActionOffset: 50,
+
+    // ⭐ PARAMETRİK DETACHED BUTTON SİSTEMİ ⭐
+    // İstediğiniz butonları ayrı gösterebilirsiniz
+    // Örnek 1: Sadece Settings butonunu ayrı yap
+    detachedIndexes: const [3], // Son buton (Settings) ayrı gösterilir
+    // Örnek 2: Birden fazla buton ayrı yapmak için
+    // detachedIndexes: const [2, 3],  // Favorites ve Settings ayrı
+
+    // Örnek 3: Hiçbir buton ayrı olmasın
+    // detachedIndexes: const [],
+
+    // Detached butonların görünümünü özelleştirin
+    detachedItemPadding: const EdgeInsets.only(right: 28, bottom: 22),
+    detachedItemSpacing: 14,
+    detachedItemSize: 58,
+
+    // İsterseniz custom builder ile tamamen özel tasarım yapabilirsiniz
+    // detachedItemBuilder: (context, item, isSelected) {
+    //   return Container(...); // Kendi tasarımınız
+    // },
   );
 
   List<NavItemConfig> get _navItems => const [
@@ -71,7 +104,7 @@ class _DemoHomeState extends State<_DemoHome> {
       materialIcon: Icons.home_outlined,
       materialSelectedIcon: Icons.home_rounded,
       cupertinoSymbol: 'house.fill',
-      badgeCount: 4,
+      badgeCount: 4, // Badge sayısı
     ),
     NavItemConfig(
       label: 'Profile',
@@ -79,7 +112,7 @@ class _DemoHomeState extends State<_DemoHome> {
       materialSelectedIcon: Icons.person,
       cupertinoSymbol: 'person.fill',
       badgeCount: 1,
-      badgeColor: Colors.pink,
+      badgeColor: Colors.pink, // Badge özel rengi
     ),
     NavItemConfig(
       label: 'Favorites',
@@ -126,6 +159,7 @@ class _DemoHomeState extends State<_DemoHome> {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBody: true,
+      backgroundColor: Colors.grey.shade200,
       body: _demoPages[_currentIndex],
       bottomNavigationBar: AdaptiveNavBar(
         config: _config,

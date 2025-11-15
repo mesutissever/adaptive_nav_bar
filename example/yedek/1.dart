@@ -26,17 +26,17 @@ class ResponsiveScale {
     _textFactor = _widthFactor;
   }
 
-  static double adaptive_w(num value) => value * _widthFactor;
-  static double adaptive_h(num value) => value * _heightFactor;
-  static double adaptive_r(num value) => value * _radiusFactor;
-  static double adaptive_sp(num value) => value * _textFactor;
+  static double adaptiveW(num value) => value * _widthFactor;
+  static double adaptiveH(num value) => value * _heightFactor;
+  static double adaptiveR(num value) => value * _radiusFactor;
+  static double adaptiveSp(num value) => value * _textFactor;
 }
 
 extension ResponsiveNum on num {
-  double get adaptive_w => ResponsiveScale.adaptive_w(this);
-  double get adaptive_h => ResponsiveScale.adaptive_h(this);
-  double get adaptive_r => ResponsiveScale.adaptive_r(this);
-  double get adaptive_sp => ResponsiveScale.adaptive_sp(this);
+  double get adaptiveW => ResponsiveScale.adaptiveW(this);
+  double get adaptiveH => ResponsiveScale.adaptiveH(this);
+  double get adaptiveR => ResponsiveScale.adaptiveR(this);
+  double get adaptiveSp => ResponsiveScale.adaptiveSp(this);
 }
 
 class NavItemConfig {
@@ -379,11 +379,11 @@ class _AdaptiveNavBarState extends State<AdaptiveNavBar> {
       (_isNavMinimized
               ? glassStyle.compactBorderRadius
               : glassStyle.expandedBorderRadius)
-          .adaptive_r,
+          .adaptiveR,
     );
     final glassHeight =
         (_isNavMinimized ? glassStyle.compactHeight : glassStyle.expandedHeight)
-            .adaptive_h;
+            .adaptiveH;
     final animDuration = _suppressAnimation
         ? Duration.zero
         : _behavior.animationDuration;
@@ -420,7 +420,7 @@ class _AdaptiveNavBarState extends State<AdaptiveNavBar> {
             duration: animDuration,
             curve: Curves.easeOutCubic,
             padding: EdgeInsets.only(
-              bottom: _isNavMinimized ? 4.adaptive_h : 10.adaptive_h,
+              bottom: _isNavMinimized ? 4.adaptiveH : 10.adaptiveH,
             ),
             child: AnimatedScale(
               scale: _isNavMinimized ? behavior.compactScale : 1,
@@ -433,7 +433,7 @@ class _AdaptiveNavBarState extends State<AdaptiveNavBar> {
                 child: Transform.translate(
                   offset: Offset(
                     0,
-                    _isNavMinimized ? 10.adaptive_h : 4.adaptive_h,
+                    _isNavMinimized ? 10.adaptiveH : 4.adaptiveH,
                   ),
                   child: SizedBox(
                     height: barHeight,
@@ -490,18 +490,18 @@ class _AdaptiveNavBarState extends State<AdaptiveNavBar> {
     }).toList();
     final currentIndex = _selectedIndex;
     final barLogicalHeight = _isIOS26OrNewer ? 80.0 : 85.0;
-    final barHeight = ResponsiveScale.adaptive_h(barLogicalHeight);
+    final barHeight = ResponsiveScale.adaptiveH(barLogicalHeight);
     final safeBottom = MediaQuery.of(context).padding.bottom;
     final hasHomeIndicator = safeBottom > 0;
     final legacyPadding = hasHomeIndicator
         ? EdgeInsets.zero
         : EdgeInsets.only(
-            top: _isNavMinimized ? 4.adaptive_h : 16.adaptive_h,
-            bottom: _isNavMinimized ? 4.adaptive_h : 6.adaptive_h,
+            top: _isNavMinimized ? 4.adaptiveH : 16.adaptiveH,
+            bottom: _isNavMinimized ? 4.adaptiveH : 6.adaptiveH,
           );
     final baseLabelStyle = TextStyle(
       color: inactiveBaseColor.withValues(alpha: 0.75),
-      fontSize: 11.adaptive_sp,
+      fontSize: 11.adaptiveSp,
     );
     var labelTextStyle = baseLabelStyle;
     final labelOverride = cupertinoStyle.labelTextStyle;
@@ -513,7 +513,7 @@ class _AdaptiveNavBarState extends State<AdaptiveNavBar> {
       labelTextStyle = labelTextStyle.copyWith(letterSpacing: letterSpacing);
     }
     final legacyDecoration = BoxDecoration(
-      borderRadius: BorderRadius.circular(28.adaptive_r),
+      borderRadius: BorderRadius.circular(28.adaptiveR),
       border: Border.all(
         color: Colors.white.withValues(alpha: 0.3),
         width: 1.4,
@@ -537,7 +537,7 @@ class _AdaptiveNavBarState extends State<AdaptiveNavBar> {
           duration: behavior.opacityDuration,
           opacity: _isNavMinimized ? 0.75 : 1,
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(28.adaptive_r),
+            borderRadius: BorderRadius.circular(28.adaptiveR),
             child: CupertinoTheme(
               data: CupertinoThemeData(
                 primaryColor:
@@ -579,8 +579,8 @@ class _AdaptiveNavBarState extends State<AdaptiveNavBar> {
                               left: 0,
                               right: 0,
                               top: hasHomeIndicator
-                                  ? 3.adaptive_h
-                                  : 6.adaptive_h,
+                                  ? 3.adaptiveH
+                                  : 6.adaptiveH,
                             ),
                             child: Row(
                               children: [
@@ -657,11 +657,11 @@ class _GlassBottomNavigationBar extends StatelessWidget {
       final base =
           Theme.of(context).textTheme.labelSmall ??
           TextStyle(
-            fontSize: 11.adaptive_sp,
+            fontSize: 11.adaptiveSp,
             fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
           );
       var textStyle = base.copyWith(
-        fontSize: base.fontSize ?? 11.adaptive_sp,
+        fontSize: base.fontSize ?? 11.adaptiveSp,
         fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
         color: selected ? activeLabelColor : inactiveLabelColor,
       );
@@ -727,19 +727,19 @@ class _GlassBottomNavigationBar extends StatelessWidget {
           ),
           Padding(
             padding: EdgeInsets.symmetric(
-              horizontal: 12.adaptive_w,
-              vertical: 8.adaptive_h,
+              horizontal: 12.adaptiveW,
+              vertical: 8.adaptiveH,
             ),
             child: NavigationBarTheme(
               data: NavigationBarThemeData(
-                height: 64.adaptive_h,
+                height: 64.adaptiveH,
                 indicatorColor: indicatorColor,
                 indicatorShape: indicatorShape,
                 labelTextStyle: WidgetStateProperty.resolveWith(
                   _resolveLabelStyle,
                 ),
                 iconTheme: WidgetStateProperty.all(
-                  IconThemeData(size: 22.adaptive_r),
+                  IconThemeData(size: 22.adaptiveR),
                 ),
                 backgroundColor: Colors.transparent,
                 elevation: 0,
@@ -759,7 +759,7 @@ class _GlassBottomNavigationBar extends StatelessWidget {
                             data: IconThemeData(
                               color: item.inactiveColor ?? Colors.black,
                             ),
-                            child: Icon(item.materialIcon, size: 22.adaptive_r),
+                            child: Icon(item.materialIcon, size: 22.adaptiveR),
                           ),
                           if (item.badgeCount > 0)
                             Positioned(
@@ -785,7 +785,7 @@ class _GlassBottomNavigationBar extends StatelessWidget {
                             ),
                             child: Icon(
                               item.materialSelectedIcon ?? item.materialIcon,
-                              size: 22.adaptive_r,
+                              size: 22.adaptiveR,
                             ),
                           ),
                           if (item.badgeCount > 0)
@@ -824,18 +824,18 @@ class _BadgeBubble extends StatelessWidget {
     final display = count > 99 ? '99+' : '$count';
     return Container(
       padding: EdgeInsets.symmetric(
-        horizontal: 6.adaptive_w,
-        vertical: 2.adaptive_h,
+        horizontal: 6.adaptiveW,
+        vertical: 2.adaptiveH,
       ),
       decoration: BoxDecoration(
         color: color,
-        borderRadius: BorderRadius.circular(10.adaptive_r),
+        borderRadius: BorderRadius.circular(10.adaptiveR),
       ),
       child: Text(
         display,
         style: TextStyle(
           color: Colors.white,
-          fontSize: 10.adaptive_sp,
+          fontSize: 10.adaptiveSp,
           fontWeight: FontWeight.w600,
         ),
       ),
