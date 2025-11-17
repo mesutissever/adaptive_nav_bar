@@ -102,6 +102,8 @@ class iOS26NavStyle {
   final double itemSpacing;
   final double verticalPadding;
   final double horizontalPadding;
+  final double innerVerticalPadding;
+  final double innerHorizontalPadding;
 
   const iOS26NavStyle({
     this.barHeight = 80,
@@ -122,6 +124,8 @@ class iOS26NavStyle {
     this.itemSpacing = 4,
     this.verticalPadding = 8,
     this.horizontalPadding = 12,
+    this.innerVerticalPadding = 6,
+    this.innerHorizontalPadding = 10,
   });
 }
 
@@ -655,6 +659,7 @@ class _AdaptiveNavBarState extends State<AdaptiveNavBar> {
           ),
           child: Container(
             height: barHeight,
+
             decoration: BoxDecoration(
               color: backgroundColor.withValues(alpha: style.backgroundAlpha),
               borderRadius: borderRadius,
@@ -1160,8 +1165,12 @@ class _iOS26TabItem extends StatelessWidget {
         duration: const Duration(milliseconds: 260),
         curve: Curves.easeOutCubic,
         padding: EdgeInsets.symmetric(
-          vertical: showLabel ? 8.adaptive_h : 12.adaptive_h,
-          horizontal: 8.adaptive_w,
+          vertical:
+              (showLabel
+                      ? style.innerVerticalPadding
+                      : style.innerVerticalPadding + 4)
+                  .adaptive_h,
+          horizontal: style.innerHorizontalPadding.adaptive_w,
         ),
         decoration: BoxDecoration(
           color: backgroundColor,

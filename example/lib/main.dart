@@ -47,7 +47,7 @@ class _DemoHomeState extends State<_DemoHome> {
     ),
     // Custom pill style rendered on Android + iOS <= 25
     ios26Style: const iOS26NavStyle(
-      barHeight: 82,
+      barHeight: 62,
       borderRadius: 32,
       blurSigma: 30,
       backgroundAlpha: 0.92,
@@ -60,8 +60,10 @@ class _DemoHomeState extends State<_DemoHome> {
       labelBehavior: NavLabelBehavior.always,
       iconSize: 24,
       itemSpacing: 4,
-      verticalPadding: 8,
+      verticalPadding: 4,
       horizontalPadding: 12,
+      // innerVerticalPadding: 2,
+      // innerHorizontalPadding: 10,
     ),
     // Native CNTabBar overrides (iOS 26+ devices)
     iosStyle: const CupertinoNavStyle(
@@ -79,7 +81,7 @@ class _DemoHomeState extends State<_DemoHome> {
 
     // Float the Settings item; add more indexes for extra bubbles.
     detachedIndexes: const [3],
-    detachedItemPadding: const EdgeInsets.only(right: 28, bottom: 22),
+    detachedItemPadding: const EdgeInsets.only(right: 20, bottom: 5),
     detachedItemSpacing: 14,
     detachedItemSize: 58,
     // detachedItemBuilder: _buildCustomBubble, // Uncomment to fully override.
