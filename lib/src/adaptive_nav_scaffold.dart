@@ -270,6 +270,9 @@ class _AdaptiveNavBarState extends State<AdaptiveNavBar> {
   bool _suppressAnimation = false;
   int? _lastInlineSelectionIndex;
   Set<int> _activeDetachedIndexes = <int>{};
+  bool _nativeBarCreationFailed = false;
+  bool _installedNativeErrorTrap = false;
+  bool Function(Object, StackTrace)? _previousPlatformErrorHandler;
 
   AdaptiveNavConfig get _config => widget.config;
   List<NavItemConfig> get _navItems => _config.items;
@@ -295,6 +298,7 @@ class _AdaptiveNavBarState extends State<AdaptiveNavBar> {
     if (widget.autoHideController != null) {
       _attachScrollController(widget.autoHideController);
     }
+    _installNativeErrorTrap();
   }
 
   @override
@@ -319,6 +323,7 @@ class _AdaptiveNavBarState extends State<AdaptiveNavBar> {
   void dispose() {
     _controller?._detach(this);
     _detachScrollController();
+    _restoreNativeErrorTrap();
     super.dispose();
   }
 
@@ -367,12 +372,62 @@ class _AdaptiveNavBarState extends State<AdaptiveNavBar> {
 
   bool get _useCupertinoNativeBar => _isCupertinoPlatform && _isIOS26OrNewer;
 
+  bool get _shouldUseNativeBar =>
+      _useCupertinoNativeBar && !_nativeBarCreationFailed;
+
   bool get _isIOS26OrNewer {
     if (!_isCupertinoPlatform) return false;
     final version = Platform.operatingSystemVersion;
     final match = RegExp(r'(\d+)').firstMatch(version);
     final major = match != null ? int.tryParse(match.group(1) ?? '') : null;
     return (major ?? 0) >= 26;
+  }
+
+  void _installNativeErrorTrap() {
+    if (_installedNativeErrorTrap || !_useCupertinoNativeBar) return;
+    _previousPlatformErrorHandler = PlatformDispatcher.instance.onError;
+    PlatformDispatcher.instance.onError = _handleNativePlatformViewError;
+    _installedNativeErrorTrap = true;
+  }
+
+  void _restoreNativeErrorTrap() {
+    if (!_installedNativeErrorTrap) return;
+    if (PlatformDispatcher.instance.onError == _handleNativePlatformViewError) {
+      PlatformDispatcher.instance.onError = _previousPlatformErrorHandler;
+    }
+    _installedNativeErrorTrap = false;
+  }
+
+  bool _handleNativePlatformViewError(
+    Object error,
+    StackTrace stackTrace,
+  ) {
+    if (_isPlatformViewRecreationError(error)) {
+      _markNativeFailure(error);
+      return true;
+    }
+    final previous = _previousPlatformErrorHandler;
+    if (previous != null) {
+      return previous(error, stackTrace);
+    }
+    return false;
+  }
+
+  bool _isPlatformViewRecreationError(Object error) {
+    return error is PlatformException && error.code == 'recreating_view';
+  }
+
+  void _markNativeFailure(Object? error) {
+    if (_nativeBarCreationFailed) return;
+    debugPrint(
+      'AdaptiveNavBar: failed to create native tab bar, falling back. '
+      '${error ?? ''}',
+    );
+    _nativeBarCreationFailed = true;
+    _restoreNativeErrorTrap();
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   void _handleNavTap(int index) {
@@ -426,8 +481,16 @@ class _AdaptiveNavBarState extends State<AdaptiveNavBar> {
     ResponsiveScale.init(context);
 
     // iOS 26+ → Use native CNTabBar
-    if (_useCupertinoNativeBar) {
-      return _buildNativeiOS26Bar();
+    if (_shouldUseNativeBar) {
+      try {
+        return _buildNativeiOS26Bar();
+      } on PlatformException catch (error) {
+        if (_isPlatformViewRecreationError(error)) {
+          _markNativeFailure(error);
+        } else {
+          rethrow;
+        }
+      }
     }
 
     // iOS 26 or earlier, or Android → mimic the iOS 26 pill style
