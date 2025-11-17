@@ -47,7 +47,7 @@ class _DemoHomeState extends State<_DemoHome> {
     ),
     // Custom pill style rendered on Android + iOS <= 25
     ios26Style: const iOS26NavStyle(
-      barHeight: 62,
+      barHeight: 70,
       borderRadius: 32,
       blurSigma: 30,
       backgroundAlpha: 0.92,

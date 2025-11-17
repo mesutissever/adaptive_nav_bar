@@ -1037,6 +1037,7 @@ class _AdaptiveNavBarState extends State<AdaptiveNavBar> {
               child: Icon(iconData, color: iconColor, size: 24.adaptive_r),
             ),
           ),
+
           if (item.badgeCount > 0)
             Positioned(
               right: -2,
