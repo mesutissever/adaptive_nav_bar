@@ -7,7 +7,7 @@ Features include:
 - Per-item color overrides, badges, and custom label behavior
 - Tunable iOS 26 pill style (blur, radius, colors, padding) for Android & older iOS versions
 - Native `CupertinoNative` integration for iOS 26+ with split trailing actions
-- Material glass fallback plus optional detached bubbles, center buttons, and trailing widgets
+- Material glass fallback plus optional detached bubbles with in-bubble labels, center buttons, and trailing widgets
 - Multiple detached nav items via `detachedIndexes`
 
 ## Installation
@@ -65,10 +65,10 @@ class _DemoAppState extends State<DemoApp> {
         cupertinoSymbol: 'gearshape.fill',
       ),
     ],
-    behavior: const NavBehaviorConfig(
-      autoHideOnScroll: true,
-      compactScale: 0.58,
-    ),
+  behavior: const NavBehaviorConfig(
+    autoHideOnScroll: true,
+    compactScale: 0.58,
+  ),
     ios26Style: const iOS26NavStyle(
       barHeight: 82,
       activeColor: Colors.indigo,
@@ -77,18 +77,19 @@ class _DemoAppState extends State<DemoApp> {
       borderRadius: 32,
       blurSigma: 30,
     ),
-    iosStyle: const CupertinoNavStyle(
-      activeColor: Colors.indigo,
-      inactiveColor: Colors.black87,
-      ios26Height: 82,
-      legacyHeight: 76,
-      indicatorPadding: 6,
-    ),
-    detachedIndexes: const [3],
-    detachedItemPadding: const EdgeInsets.only(right: 20, bottom: 20),
-    detachedItemSpacing: 12,
-    detachedItemSize: 56,
-  );
+  iosStyle: const CupertinoNavStyle(
+    activeColor: Colors.indigo,
+    inactiveColor: Colors.black87,
+    ios26Height: 82,
+    legacyHeight: 76,
+    indicatorPadding: 6,
+  ),
+  // Float the Settings tab as a bubble; icon + label sit inside and auto-scale to fit.
+  detachedIndexes: const [3],
+  detachedItemPadding: const EdgeInsets.only(right: 20, bottom: 20),
+  detachedItemSpacing: 12,
+  detachedItemSize: 56,
+);
 
   @override
   Widget build(BuildContext context) {

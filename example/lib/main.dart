@@ -79,7 +79,7 @@ class _DemoHomeState extends State<_DemoHome> {
       selectedLabelTextStyle: TextStyle(fontWeight: FontWeight.w600),
     ),
 
-    // Float the Settings item; add more indexes for extra bubbles.
+    // Float the Settings item; icon + label live inside the bubble and scale down to fit.
     detachedIndexes: const [3],
     detachedItemPadding: const EdgeInsets.only(right: 20, bottom: 5),
     detachedItemSpacing: 14,

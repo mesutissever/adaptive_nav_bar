@@ -1,12 +1,9 @@
 import 'dart:io' show Platform;
 import 'dart:math';
 import 'dart:ui';
-
 import 'package:cupertino_native/cupertino_native.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 
 class ResponsiveScale {
@@ -173,16 +170,16 @@ class AdaptiveNavConfig {
   final int cupertinoTrailingNativeCount;
   final double cupertinoSplitSpacing;
 
-  // Detached button system - parametrik olarak istediğiniz butonları ayrı yapabilirsiniz
+  // Detached button system - parameterize any items you want to float outside
   final List<int>
-  detachedIndexes; // Ayrı gösterilecek buton index'leri (örn: [3] veya [2, 3])
+  detachedIndexes; // Indexes that should render as detached bubbles (e.g., [3] or [2, 3])
   final DetachedItemBuilder? detachedItemBuilder; // Custom builder
-  final EdgeInsets? detachedItemPadding; // Detached butonların padding'i
-  final double detachedItemSpacing; // Detached butonlar arası boşluk
-  final double detachedItemSize; // Detached buton boyutu
+  final EdgeInsets? detachedItemPadding; // Padding for detached bubbles
+  final double detachedItemSpacing; // Spacing between detached bubbles
+  final double detachedItemSize; // Size of each detached bubble
 
   @Deprecated('Use detachedIndexes instead')
-  final int? detachedIndex; // Geriye dönük uyumluluk için
+  final int? detachedIndex; // Backward compatibility
 
   AdaptiveNavConfig({
     required this.items,
@@ -433,7 +430,7 @@ class _AdaptiveNavBarState extends State<AdaptiveNavBar> {
       return _buildNativeiOS26Bar();
     }
 
-    // iOS 26 öncesi veya Android → iOS 26 style taklit
+    // iOS 26 or earlier, or Android → mimic the iOS 26 pill style
     return _buildCustomiOS26StyleBar();
   }
 
@@ -574,7 +571,7 @@ class _AdaptiveNavBarState extends State<AdaptiveNavBar> {
       padding: EdgeInsets.only(
         left: horizontalMargin,
         right: horizontalMargin,
-        // bottom: 50.adaptive_h, // Alt çentikten boşluk
+        // bottom: 50.adaptive_h, // Leave gap for home indicator
       ),
       child: navBar,
     );
@@ -593,7 +590,7 @@ class _AdaptiveNavBarState extends State<AdaptiveNavBar> {
       );
     }
 
-    // Eğer native split kullanılmıyorsa detached overlay ekle
+    // If native split is not used, add detached overlay
     if (!useNativeSplit && detachedItems.isNotEmpty) {
       overlay.add(_buildDetachedOverlay(detachedItems));
     }
@@ -636,18 +633,18 @@ class _AdaptiveNavBarState extends State<AdaptiveNavBar> {
         ? Duration.zero
         : behavior.opacityDuration;
 
-    // Detached butonlar için padding
+    // Padding for detached buttons
     final detachedPadding = widget.config.detachedItemPadding;
     final detachedRightOffset = detachedPadding?.right ?? 12.adaptive_w;
     final detachedBottomOffset = detachedPadding?.bottom ?? 8.adaptive_h;
 
-    // Settings butonu için navigation bar'dan buton genişliği + ekstra boşluk ayır
+    // Reserve extra space on the right if detached bubbles are present
     final settingsSpace = detachedItems.isNotEmpty
         ? (widget.config.detachedItemSize.adaptive_w +
               50.adaptive_w) // 58 + 20 = 78px
         : 0.0;
 
-    // Navigation bar - Settings için sağdan 78px boşluk bırak
+    // Navigation bar with reserved right-side space
     final navBarContent = Padding(
       padding: EdgeInsets.only(right: settingsSpace),
       child: ClipRRect(
@@ -702,14 +699,14 @@ class _AdaptiveNavBarState extends State<AdaptiveNavBar> {
       ),
     );
 
-    // Navigation bar ve detached butonları Stack ile birleştir
+    // Combine navigation bar and detached buttons in a Stack
     Widget scaledContent = Stack(
       clipBehavior: Clip.none,
       children: [
-        // Navigation bar - sağdan 78px daha dar
+        // Navigation bar, narrower on the right
         navBarContent,
 
-        // Detached butonlar - navigation bar'ın sağ üstünde overlay
+        // Detached buttons overlayed on top-right of the bar
         if (detachedItems.isNotEmpty)
           Positioned(
             right: detachedRightOffset,
@@ -723,7 +720,7 @@ class _AdaptiveNavBarState extends State<AdaptiveNavBar> {
       ],
     );
 
-    // Tüm container'ı birlikte scale et
+    // Scale the entire container together
     Widget navBar = Align(
       alignment: Alignment.bottomCenter,
       child: AnimatedScale(
@@ -743,18 +740,18 @@ class _AdaptiveNavBarState extends State<AdaptiveNavBar> {
       padding: EdgeInsets.only(
         left: horizontalMargin,
         right: horizontalMargin,
-        bottom: 15.adaptive_h, // Alt çentikten boşluk
+        bottom: 15.adaptive_h, // Leave gap for home indicator
       ),
       child: navBar,
     );
 
-    // Stack ile overlay'ları ekle
+    // Add overlays with a Stack
     final trailingAction = widget.config.trailingAction;
     final trailingPadding = widget.config.trailingActionPadding;
 
     final overlayWidgets = <Widget>[navBar];
 
-    // Trailing action ekle
+    // Add trailing action
     if (trailingAction != null) {
       final defaultBottomOffset = hasHomeIndicator
           ? safeBottom + 6.adaptive_h
@@ -768,7 +765,7 @@ class _AdaptiveNavBarState extends State<AdaptiveNavBar> {
       );
     }
 
-    // Eğer overlay varsa Stack kullan
+    // Use a Stack if we have overlays
     if (overlayWidgets.length > 1) {
       return Stack(
         alignment: Alignment.bottomCenter,
@@ -780,7 +777,7 @@ class _AdaptiveNavBarState extends State<AdaptiveNavBar> {
     return navBar;
   }
 
-  // Detached butonların toplam genişliğini hesapla (spacing dahil)
+  // Compute total width for detached buttons (including spacing)
   double _computeDetachedTotalWidth(int detachedCount) {
     if (detachedCount <= 0) return 0;
     final bubbleSize = widget.config.detachedItemSize.adaptive_w;
@@ -788,7 +785,7 @@ class _AdaptiveNavBarState extends State<AdaptiveNavBar> {
     return detachedCount * bubbleSize + max(0, detachedCount - 1) * spacing;
   }
 
-  // Detached butonları row olarak oluştur
+  // Build detached buttons as a row
   Widget _buildDetachedRow(List<_IndexedNavItem> entries) {
     if (entries.isEmpty) return const SizedBox.shrink();
 
@@ -856,7 +853,7 @@ class _AdaptiveNavBarState extends State<AdaptiveNavBar> {
   Set<int> _resolveDetachedIndexes() {
     final resolved = <int>{};
 
-    // Önce yeni detachedIndexes listesini kontrol et
+    // Prefer the new detachedIndexes list
     if (_config.detachedIndexes.isNotEmpty) {
       for (final index in _config.detachedIndexes) {
         if (index >= 0 && index < _navItems.length) {
@@ -866,7 +863,7 @@ class _AdaptiveNavBarState extends State<AdaptiveNavBar> {
       return resolved;
     }
 
-    // Fallback: cupertinoTrailingNativeCount kullan
+    // Fallback: use cupertinoTrailingNativeCount
     final fallbackCount = min(_config.cupertinoTrailingNativeCount, 1);
     if (fallbackCount <= 0) return resolved;
     final count = min(
@@ -944,8 +941,7 @@ class _AdaptiveNavBarState extends State<AdaptiveNavBar> {
   }
 
   Widget _buildDetachedOverlay(List<_IndexedNavItem> entries) {
-    // Bu metod sadece iOS 26 native bar için kullanılıyor
-    // Burada da detached butonlar navigation bar ile birlikte scale olmalı
+    // Used only for the iOS 26 native bar; detached buttons should scale with it
     if (entries.isEmpty) return const SizedBox.shrink();
 
     final padding = widget.config.detachedItemPadding;
@@ -1004,13 +1000,16 @@ class _AdaptiveNavBarState extends State<AdaptiveNavBar> {
     final iconColor = isSelected
         ? Colors.white
         : item.inactiveColor ?? Colors.black87;
+    final iconSize = 20.adaptive_r;
     final bubbleSize = widget.config.detachedItemSize.adaptive_w;
+    final labelWidth = bubbleSize * 0.78;
     final borderColor = isSelected
         ? Colors.white.withValues(alpha: 0.7)
         : Colors.white.withValues(alpha: 0.45);
     final shadowColor = isSelected
         ? primary.withValues(alpha: 0.45)
         : Colors.black.withValues(alpha: 0.12);
+    final labelColor = iconColor;
     return SizedBox(
       width: bubbleSize,
       height: bubbleSize,
@@ -1034,7 +1033,31 @@ class _AdaptiveNavBarState extends State<AdaptiveNavBar> {
               ],
             ),
             child: Center(
-              child: Icon(iconData, color: iconColor, size: 24.adaptive_r),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(iconData, color: iconColor, size: iconSize),
+                  SizedBox(height: 2.adaptive_h),
+                  SizedBox(
+                    width: labelWidth,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        item.label,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: labelColor,
+                          fontSize: 9.adaptive_sp,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.1,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
 
