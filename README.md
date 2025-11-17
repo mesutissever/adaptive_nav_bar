@@ -6,7 +6,7 @@ Features include:
 - Scroll-aware expand/shrink behavior with haptic feedback controls
 - Per-item color overrides, badges, and custom label behavior
 - Tunable iOS 26 pill style (blur, radius, colors, padding) for Android & older iOS versions
-- Native `CupertinoNative` integration for iOS 26+ with split trailing actions
+- Native `CupertinoNative` integration for iOS 26+ with split trailing actions (disable with `useCupertinoNativeTabBar`)
 - Material glass fallback plus optional detached bubbles with in-bubble labels, center buttons, and trailing widgets
 - Multiple detached nav items via `detachedIndexes`
 

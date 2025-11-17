@@ -163,6 +163,7 @@ class AdaptiveNavConfig {
   final iOS26NavStyle ios26Style;
   final CupertinoNavStyle iosStyle;
   final bool preferCupertinoStyle;
+  final bool useCupertinoNativeTabBar;
   final Widget? centerAction;
   final double centerActionOffset;
   final Widget? trailingAction;
@@ -187,6 +188,7 @@ class AdaptiveNavConfig {
     this.ios26Style = const iOS26NavStyle(),
     this.iosStyle = const CupertinoNavStyle(),
     this.preferCupertinoStyle = false,
+    this.useCupertinoNativeTabBar = true,
     this.centerAction,
     this.centerActionOffset = 0,
     this.trailingAction,
@@ -373,7 +375,9 @@ class _AdaptiveNavBarState extends State<AdaptiveNavBar> {
   bool get _useCupertinoNativeBar => _isCupertinoPlatform && _isIOS26OrNewer;
 
   bool get _shouldUseNativeBar =>
-      _useCupertinoNativeBar && !_nativeBarCreationFailed;
+      _useCupertinoNativeBar &&
+      _config.useCupertinoNativeTabBar &&
+      !_nativeBarCreationFailed;
 
   bool get _isIOS26OrNewer {
     if (!_isCupertinoPlatform) return false;
@@ -384,7 +388,7 @@ class _AdaptiveNavBarState extends State<AdaptiveNavBar> {
   }
 
   void _installNativeErrorTrap() {
-    if (_installedNativeErrorTrap || !_useCupertinoNativeBar) return;
+    if (_installedNativeErrorTrap || !_shouldUseNativeBar) return;
     _previousPlatformErrorHandler = PlatformDispatcher.instance.onError;
     PlatformDispatcher.instance.onError = _handleNativePlatformViewError;
     _installedNativeErrorTrap = true;
