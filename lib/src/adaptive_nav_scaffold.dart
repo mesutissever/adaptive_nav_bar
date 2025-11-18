@@ -402,10 +402,7 @@ class _AdaptiveNavBarState extends State<AdaptiveNavBar> {
     _installedNativeErrorTrap = false;
   }
 
-  bool _handleNativePlatformViewError(
-    Object error,
-    StackTrace stackTrace,
-  ) {
+  bool _handleNativePlatformViewError(Object error, StackTrace stackTrace) {
     if (_isPlatformViewRecreationError(error)) {
       _markNativeFailure(error);
       return true;
@@ -555,7 +552,7 @@ class _AdaptiveNavBarState extends State<AdaptiveNavBar> {
         label: resolveLabel(index, config.label),
         icon: CNSymbol(
           config.cupertinoSymbol,
-          mode: CNSymbolRenderingMode.monochrome,
+          mode: CNSymbolRenderingMode.multicolor,
           color: config.inactiveColor ?? inactiveBaseColor,
         ),
       );
@@ -565,8 +562,10 @@ class _AdaptiveNavBarState extends State<AdaptiveNavBar> {
       shrinkCentered: true,
       height: barLogicalHeight,
       backgroundColor: Colors.transparent,
+
       items: cupertinoItems,
       currentIndex: currentIndex,
+
       onTap: (value) {
         final target = inlineItems[value].index;
         _handleNavTap(target);
